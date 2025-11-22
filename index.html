@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Heroic Mini P.E.K.K.A Countdown</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0a0800;
+    --accent: #ffb300;
+    --text: #fff8e1;
+    --panel: rgba(20,15,5,0.9);
+  }
+  body{
+    margin:0;height:100vh;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;overflow:hidden;
+    display:grid;place-items:center;
+    background:radial-gradient(circle at 50% 40%,#1a1400,#0a0800);
+  }
+  canvas{position:fixed;inset:0;z-index:0;pointer-events:none;}
+
+  .gear{
+    position:fixed;top:30px;right:30px;width:60px;height:60px;border-radius:50%;background:rgba(var(--accent),0.2);
+    border:2px solid var(--accent);display:grid;place-items:center;cursor:pointer;z-index:100;
+    transition:0.4s;backdrop-filter:blur(10px);
+  }
+  .gear:hover{background:rgba(var(--accent),0.4);transform:rotate(90deg);}
+
+  .main{
+    text-align:center;z-index:10;
+  }
+  h1{
+    font-size:90px;font-weight:900;letter-spacing:6px;color:var(--accent);
+    text-shadow:0 0 60px rgba(255,179,0,0.8),0 0 120px rgba(255,179,0,0.5);
+    margin-bottom:20px;
+  }
+  .subtitle{
+    font-size:24px;color:#ffcc80;margin-bottom:60px;letter-spacing:2px;
+  }
+  .countdown{
+    font-size:120px;font-weight:700;letter-spacing:8px;color:#fff;
+    text-shadow:0 0 40px var(--accent);
+  }
+
+  .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.95);backdrop-filter:blur(20px);align-items:center;justify-content:center;z-index:1000;}
+  .modal.active{display:flex;}
+  .modal-box{
+    background:var(--panel);padding:50px 60px;border-radius:32px;border:2px solid var(--accent);
+    box-shadow:0 30px 100px rgba(255,179,0,0.3);width:90%;max-width:500px;text-align:center;
+  }
+  .setting{
+    margin:20px 0;display:flex;align-items:center;justify-content:space-between;
+    font-size:18px;
+  }
+  .setting label{color:#ffcc80;}
+</style>
+</head>
+<body>
+
+<canvas id="pancakes"></canvas>
+
+<button class="gear" id="gearBtn">
+  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#ffb300" stroke-width="2.5">
+    <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09A1.65 1.65 0 0 0 15 4.6a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+  </svg>
+</button>
+
+<div class="main">
+  <h1>HEROIC MINI P.E.K.K.A</h1>
+  <p class="subtitle">December 1st 2025</p>
+  <div class="countdown" id="countdown">00d 00h 00m 00s</div>
+</div>
+
+<div class="modal" id="modal">
+  <div class="modal-box">
+    <h2 style="font-size:36px;margin-bottom:30px;color:#ffb300;">Settings</h2>
+    <div class="setting">
+      <label>Pancake Density</label>
+      <input type="range" id="density" min="10" max="100" value="40" style="width:200px;">
+    </div>
+    <div class="setting">
+      <label>Pancake Size</label>
+      <input type="range" id="size" min="30" max="120" value="70" style="width:200px;">
+    </div>
+    <div class="setting">
+      <label>Background Darkness</label>
+      <input type="range" id="darkness" min="0" max="100" value="30" style="width:200px;">
+    </div>
+    <button onclick="document.getElementById('modal').classList.remove('active')" 
+            style="margin-top:40px;padding:16px 40px;background:#ffb300;color:#000;border:none;border-radius:50px;font-size:18px;cursor:pointer;">
+      Close
+    </button>
+  </div>
+</div>
+
+<script>
+// COUNTDOWN TO DECEMBER 1ST 2025
+const release = new Date('2025-12-01T00:00:00');
+function updateCountdown(){
+  const now = new Date();
+  const diff = release - now;
+  
+  if(diff <= 0){
+    document.getElementById('countdown').innerHTML = "<span style='color:#ffb300;'>HE'S HERE</span>";
+    return;
+  }
+
+  const d = Math.floor(diff / (1000*60*60*24));
+  const h = Math.floor((diff % (1000*60*60*24)) / (1000*60*60));
+  const m = Math.floor((diff % (1000*60*60)) / (1000*60));
+  const s = Math.floor((diff % (1000*60)) / 1000);
+
+  document.getElementById('countdown').innerHTML = 
+    `<span style="color:#ffcc80;">${d}</span>d ` +
+    `<span style="color:#ffb300;">${h.toString().padStart(2,'0')}</span>h ` +
+    `<span style="color:#ff9800;">${m.toString().padStart(2,'0')}</span>m ` +
+    `<span style="color:#ff6d00;">${s.toString().padStart(2,'0')}</span>s`;
+}
+updateCountdown();
+setInterval(updateCountdown, 1000);
+
+// PANCAKE RAIN (clean & beautiful)
+const canvas = document.getElementById('pancakes');
+const ctx = canvas.getContext('2d');
+canvas.width = innerWidth; canvas.height = innerHeight;
+
+let pancakes = [];
+let density = 40;
+let size = 70;
+
+function initPancakes(){
+  pancakes = [];
+  for(let i = 0; i < density; i++){
+    pancakes.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      size: (Math.random() * 0.6 + 0.7) * size,
+      speed: Math.random() * 2 + 1,
+      rot: Math.random() * 360,
+      rotSpeed: Math.random() * 4 - 2
+    });
+  }
+}
+
+function drawPancake(p){
+  ctx.save();
+  ctx.translate(p.x, p.y);
+  ctx.rotate(p.rot * Math.PI / 180);
+  ctx.font = p.size + 'px Arial';
+  ctx.fillText("🥞", -p.size/2, p.size/4);
+  ctx.restore();
+}
+
+function animate(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  pancakes.forEach(p=>{
+    drawPancake(p);
+    p.y += p.speed;
+    p.rot += p.rotSpeed;
+    if(p.y > canvas.height + 100){
+      p.y = -100;
+      p.x = Math.random() * canvas.width;
+    }
+  });
+  requestAnimationFrame(animate);
+}
+
+initPancakes();
+animate();
+
+// Settings
+document.getElementById('gearBtn').onclick = () => document.getElementById('modal').classList.add('active');
+
+document.getElementById('density').oninput = e => {
+  density = e.target.value;
+  initPancakes();
+};
+document.getElementById('size').oninput = e => {
+  size = e.target.value;
+  initPancakes();
+};
+document.getElementById('darkness').oninput = e => {
+  document.body.style.background = `radial-gradient(circle at 50% 40%, #1a1400${e.target.value}, #0a0800)`;
+};
+
+window.onresize = () => {
+  canvas.width = innerWidth;
+  canvas.height = innerHeight;
+};
+</script>
+</body>
+</html>
